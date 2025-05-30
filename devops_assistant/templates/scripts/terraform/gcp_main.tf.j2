@@ -1,0 +1,11 @@
+provider "google" {
+  project = var.project
+  region  = var.region
+}
+
+{% for r in resources %}
+resource "google_compute_${{r.type}}" "{{ r.type }}" {
+  machine_type = "{{ r.size }}"
+  # TODO: additional resource-specific settings
+}
+{% endfor %}

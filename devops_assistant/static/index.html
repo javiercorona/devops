@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>DevOps Automation Assistant</title>
+  <style>
+    :root {
+      --primary-bg: #e8f5e9;
+      --section-bg: #ffffff;
+      --border: #c8e6c9;
+      --button-bg: #a5d6a7;
+      --button-hover: #81c784;
+      --text: #2e7d32;
+      --code-bg: #f1f8e9;
+    }
+    [data-theme="dark"] {
+      --primary-bg: #263238;
+      --section-bg: #37474f;
+      --border: #455a64;
+      --button-bg: #546e7a;
+      --button-hover: #455a64;
+      --text: #eceff1;
+      --code-bg: #455a64;
+    }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { font-family: Arial, sans-serif; background: var(--primary-bg); color: var(--text); margin:0; padding:1rem; transition:0.3s; }
+    .container { max-width:800px; margin:auto; background:var(--section-bg); padding:1.5rem; border:1px solid var(--border); border-radius:8px; }
+    h1 { text-align:center; margin-top:0; }
+    h2 { border-bottom:2px solid var(--border); padding-bottom:.3rem; }
+    .section { margin-bottom:2rem; padding:1rem; border:1px solid var(--border); border-radius:6px; background:var(--section-bg); }
+    .flex { display:flex; gap:.5rem; }
+    .half { flex:1; }
+    input, select, textarea, button { width:100%; margin-bottom:.5rem; }
+    input, select { padding:.5rem; border:1px solid var(--border); border-radius:4px; background:var(--section-bg); color:var(--text); }
+    textarea { height:6rem; padding:.5rem; font-family:monospace; border:1px solid var(--border); border-radius:4px; background:var(--code-bg); }
+    button { background:var(--button-bg); border:none; padding:.75rem; border-radius:4px; font-size:1rem; color:#fff; cursor:pointer; transition:.2s; }
+    button:disabled { background:#ccc; cursor:not-allowed; }
+    button:hover:enabled { background:var(--button-hover); }
+    pre { background:var(--code-bg); padding:1rem; border:1px solid var(--border); border-radius:4px; overflow-x:auto; }
+    .error { color:#d32f2f; font-size:.9rem; margin-top:-.25rem; }
+    .theme-toggle { float:right; cursor:pointer; font-size:1.2rem; }
+  </style>
+</head>
+<body>
+  <div class="container" data-theme="light">
+    <span class="theme-toggle" onclick="toggleTheme()">🌓</span>
+    <h1>DevOps Automation Assistant</h1>
+
+    <!-- API KEY -->
+    <div class="section">
+      <h2>API Key</h2>
+      <input id="apiKey" placeholder="X-API-Key" />
+      <div id="apiKeyError" class="error"></div>
+    </div>
+
+    <!-- Terraform -->
+    <div class="section">
+      <h2>Generate Terraform</h2>
+      <div class="flex">
+        <select id="tfProvider" class="half">
+          <option value="aws">AWS</option>
+          <option value="azure">Azure</option>
+          <option value="google">Google</option>
+        </select>
+        <input id="tfRegion" class="half" placeholder="Region (e.g. us-east-1)" />
+      </div>
+      <textarea id="tfInput"></textarea>
+      <div id="tfError" class="error"></div>
+      <button id="tfBtn" onclick="prepareTerraform()" disabled>Generate Terraform</button>
+    </div>
+
+    <!-- CI/CD -->
+    <div class="section">
+      <h2>Generate CI/CD</h2>
+      <div class="flex">
+        <select id="ciPlatform" class="half">
+          <option value="github">GitHub</option>
+          <option value="gitlab">GitLab</option>
+        </select>
+        <input id="ciStepName" class="half" placeholder="Step name (e.g. Build)" />
+      </div>
+      <textarea id="ciInput"></textarea>
+      <div id="ciError" class="error"></div>
+      <button id="ciBtn" onclick="prepareCICD()" disabled>Generate CI/CD</button>
+    </div>
+
+    <!-- Dockerfile -->
+    <div class="section">
+      <h2>Generate Dockerfile</h2>
+      <input id="dockBase" placeholder="Base image (e.g. python:3.9-slim)" />
+      <input id="dockPort" placeholder="Port (e.g. 8000)" />
+      <textarea id="dockInput"></textarea>
+      <div id="dockError" class="error"></div>
+      <button id="dockBtn" onclick="prepareDockerfile()" disabled>Generate Dockerfile</button>
+    </div>
+
+    <!-- K8s -->
+    <div class="section">
+      <h2>Generate K8s Deployment</h2>
+      <input id="k8sName" placeholder="App name (e.g. my-app)" />
+      <input id="k8sImage" placeholder="Image (e.g. my-app:latest)" />
+      <input id="k8sPort" placeholder="Port (e.g. 8000)" />
+      <textarea id="k8sInput"></textarea>
+      <div id="k8sError" class="error"></div>
+      <button id="k8sBtn" onclick="prepareK8s()" disabled>Generate K8s</button>
+    </div>
+
+    <!-- Ansible -->
+    <div class="section">
+      <h2>Generate Ansible Playbook</h2>
+      <button id="ansibleBtn" onclick="prepareAnsible()" disabled>Generate Ansible</button>
+    </div>
+
+    <!-- CloudFormation -->
+    <div class="section">
+      <h2>Generate CloudFormation</h2>
+      <input id="cfStack" placeholder="Stack name (e.g. my-stack)" />
+      <textarea id="cfInput"></textarea>
+      <div id="cfError" class="error"></div>
+      <button id="cfBtn" onclick="prepareCF()" disabled>Generate CloudFormation</button>
+    </div>
+
+    <!-- Monitoring -->
+    <div class="section">
+      <h2>Generate Monitoring Config</h2>
+      <select id="monSys">
+        <option value="prometheus">Prometheus</option>
+        <option value="grafana">Grafana</option>
+      </select>
+      <input id="monJob" placeholder="Job name (e.g. api)" />
+      <input id="monTargets" placeholder="Targets (comma-separated)" />
+      <textarea id="monInput"></textarea>
+      <div id="monError" class="error"></div>
+      <button id="monBtn" onclick="prepareMon()" disabled>Generate Monitoring</button>
+    </div>
+
+    <!-- Output -->
+    <div class="section">
+      <h2>Output</h2>
+      <pre id="output">Results will appear here...</pre>
+    </div>
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const c = document.querySelector('.container');
+      c.dataset.theme = c.dataset.theme === 'light' ? 'dark' : 'light';
+    }
+
+    // enable/disable buttons
+    document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', updateButtons));
+    function validateKey() {
+      const key = apiKey.value.trim(), err = apiKeyError;
+      if (!key) { err.textContent = 'API Key is required.'; return false; }
+      err.textContent = ''; return true;
+    }
+    function updateButtons() {
+      const ok = validateKey();
+      tfBtn.disabled   = !ok || !tfRegion.value.trim();
+      ciBtn.disabled   = !ok || !ciStepName.value.trim();
+      dockBtn.disabled = !ok || !dockBase.value.trim() || !dockPort.value.trim();
+      k8sBtn.disabled  = !ok || !k8sName.value.trim() || !k8sImage.value.trim() || !k8sPort.value.trim();
+      ansibleBtn.disabled = !ok;
+      cfBtn.disabled   = !ok || !cfStack.value.trim();
+      monBtn.disabled  = !ok || !monJob.value.trim() || !monTargets.value.trim();
+    }
+
+    // generic POST helper
+    async function callApi(path, inputId) {
+      if (!validateKey()) return;
+      const opts = { method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          'X-API-Key': apiKey.value.trim()
+        }
+      };
+      if (inputId) opts.body = document.getElementById(inputId).value;
+      console.log(`▶ POST ${path}`, opts.body);
+      const res = await fetch(path, opts);
+      const data = await res.json().catch(() => ({}));
+      output.textContent = res.ok
+        ? (data.code || JSON.stringify(data, null, 2))
+        : `Error ${res.status}: ${data.detail || JSON.stringify(data)}`;
+    }
+
+    // prepare each section
+    function prepareTerraform(){
+      tfError.textContent='';
+      const pl = { provider: tfProvider.value,
+        resources:[{type:'ec2',size:'t3.micro',region:tfRegion.value.trim()}] };
+      tfInput.value = JSON.stringify(pl,null,2);
+      callApi('/generate/terraform','tfInput');
+    }
+    function prepareCICD(){
+      ciError.textContent='';
+      const pl={ platform:ciPlatform.value, steps:[{name:ciStepName.value.trim(),run:''}]};
+      ciInput.value=JSON.stringify(pl,null,2);
+      callApi('/generate/cicd','ciInput');
+    }
+    function prepareDockerfile(){
+      dockError.textContent='';
+      const pl={ base_image:dockBase.value.trim(), port:+dockPort.value.trim()};
+      dockInput.value=JSON.stringify(pl,null,2);
+      callApi('/generate/dockerfile','dockInput');
+    }
+    function prepareK8s(){
+      k8sError.textContent='';
+      const pl={ name:k8sName.value.trim(), image:k8sImage.value.trim(), port:+k8sPort.value.trim()};
+      k8sInput.value=JSON.stringify(pl,null,2);
+      callApi('/generate/k8s','k8sInput');
+    }
+    function prepareAnsible(){ callApi('/generate/ansible'); }
+    function prepareCF(){
+      cfError.textContent='';
+      const pl={ stack_name:cfStack.value.trim(), resources:[{name:'MyBucket',definition:{}}]};
+      cfInput.value=JSON.stringify(pl,null,2);
+      callApi('/generate/cloudformation','cfInput');
+    }
+    function prepareMon(){
+      monError.textContent='';
+      const pl={ system:monSys.value,
+        metrics:[{ job_name:monJob.value.trim(),
+          targets:monTargets.value.split(',').map(t=>t.trim()) }]
+      };
+      monInput.value=JSON.stringify(pl,null,2);
+      callApi('/generate/monitoring','monInput');
+    }
+
+    // defaults + initial enable
+    document.addEventListener('DOMContentLoaded',()=>{
+      tfRegion.value='us-east-1';
+      ciStepName.value='Build';
+      dockBase.value='python:3.9-slim'; dockPort.value='8000';
+      k8sName.value='my-app'; k8sImage.value='my-app:latest'; k8sPort.value='8000';
+      cfStack.value='my-stack'; monJob.value='api'; monTargets.value='localhost:9090';
+      tfInput.value   = JSON.stringify({provider:'aws',resources:[{type:'ec2',size:'t3.micro',region:'us-east-1'}]},null,2);
+      ciInput.value   = JSON.stringify({platform:'github',steps:[{name:'Build',run:''}]},null,2);
+      dockInput.value = JSON.stringify({base_image:'python:3.9-slim',port:8000},null,2);
+      k8sInput.value  = JSON.stringify({name:'my-app',image:'my-app:latest',port:8000},null,2);
+      cfInput.value   = JSON.stringify({stack_name:'my-stack',resources:[{name:'MyBucket',definition:{}}]},null,2);
+      monInput.value  = JSON.stringify({system:'prometheus',metrics:[{job_name:'api',targets:['localhost:9090']}]}),null,2;
+      updateButtons();
+    });
+  </script>
+</body>
+</html>

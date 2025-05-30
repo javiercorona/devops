@@ -1,0 +1,10 @@
+provider "azurerm" {
+  features {}
+}
+
+{% for r in resources %}
+resource "azurerm_${{r.type}}" "{{ r.type }}" {
+  sku = "{{ r.size }}"
+  # TODO: additional resource-specific settings
+}
+{% endfor %}

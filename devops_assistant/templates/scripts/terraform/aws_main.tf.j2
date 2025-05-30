@@ -1,0 +1,10 @@
+provider "aws" {
+  region = var.region
+}
+
+{% for r in resources %}
+resource "aws_${{r.type}}" "{{ r.type }}" {
+  instance_type = "{{ r.size }}"
+  # TODO: additional resource-specific settings
+}
+{% endfor %}
